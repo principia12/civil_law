@@ -31,6 +31,23 @@ basic_tokenizer = Tokenizer(\
     lambda x:x.split(),
     lambda x:x)
 
+from koalanlp.Util import initialize, finalize
+from koalanlp.proc import *
+from koalanlp import API
+
+initialize(java_options="-Xmx4g -Dfile.encoding=utf-8", KKMA="2.0.2", EUNJEON="2.0.2", ETRI="2.0.2", HNN="2.1.4")
+finalize()
+
 if __name__ == '__main__':
     text = '미성년자가 법률행위를 함에는 법정대리인의 동의를 얻어야 한다. 그러나 권리만을 얻거나 의무만을 면하는 행위는 그러하지 아니하다.'
     res = basic_tokenizer(text)
+
+    # 품사분석기 이용법
+    tagger = Tagger(API.EUNJEON)
+    tagged = tagger.tag("안녕하세요. 눈이 오는 설날 아침입니다.")
+    print(tagged)
+
+    # 의존구문분석기 이용법
+    parser = Parser(API.KKMA)
+    parsed = parser.analyze("안녕하세요. 눈이 오는 설날 아침입니다.")
+    print(parsed)
