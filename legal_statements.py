@@ -87,6 +87,7 @@ def 민법_parser(file_path = os.path.join('assets', '민법전문')):
 
     return res
 
+민법조항들 = 민법_parser
 
 민법_제3조 = LegalStatement(법령 = '민법',
                        장 = '2',
