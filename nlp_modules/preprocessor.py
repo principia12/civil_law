@@ -28,29 +28,36 @@ class Tokenizer:
         return res
 
 class KoalaTokenizer:
-    def __init__(self, api_name = 'HNN'):
-        try:
-            self.API = eval('API.%s'%api_name)
-        except AttributeError:
-            assert False, 'No such api'
+    def __init__(self, api_name = 'HNN', etri_key = '578d0f45-eae6-402c-9086-1f105c30b99a'):
+        if api_name == 'etri':
+            self.API = API.ETRI
+            self.kargs = {'etri_key' : etri_key}
+        else:
+            try:
+                self.API = eval('API.%s'%api_name)
+                self.kargs = {}
+            except AttributeError:
+                assert False, 'No such api'
+
         self.splitter = lambda x : None
         self.tagger = lambda x : None
         self.parser = lambda x : None
 
     def __enter__(self):
         initialize(java_options="-Xmx4g", hnn='LATEST', KKMA="2.0.4", ETRI="2.0.4")
+
         try:
-            self.splitter = SentenceSplitter(self.API)
+            self.splitter = SentenceSplitter(self.HNN)
         except AttributeError:
             print('SentenceSplitter not provided for %s'%self.API)
 
         try:
-            self.tagger = Tagger(self.API)
+            self.tagger = Tagger(self.API, **self.kargs)
         except AttributeError:
             print('tagger not provided for %s'%self.API)
 
         try:
-            self.parser = Parser(self.API)
+            self.parser = Parser(self.API, **self.kargs)
         except AttributeError:
             print('parser not provided for %s'%self.API)
 
@@ -92,8 +99,8 @@ basic_tokenizer = Tokenizer(\
 # hnn_tokenizer = Tokenizer(splitter, tagger, parser)
 
 if __name__ == '__main__' and False:
-    text = '미성년자가 법률행위를 함에는 법정대리인의 동의를 얻어야 한다. 그러나 권리만을 얻거나 의무만을 면하는 행위는 그러하지 아니하다.'
-    res = basic_tokenizer(text)
+    # text = '미성년자가 법률행위를 함에는 법정대리인의 동의를 얻어야 한다. 그러나 권리만을 얻거나 의무만을 면하는 행위는 그러하지 아니하다.'
+    # res = basic_tokenizer(text)
 
     # initialize(java_options="-Xmx4g", hnn='LATEST', KKMA="2.0.4", ETRI="2.0.4")
 
@@ -103,4 +110,9 @@ if __name__ == '__main__' and False:
     # tagger = Tagger(API.HNN)
     # parser = Parser(API.HNN)
 
-    finalize()
+    # finalize()
+    print(1)
+    with KoalaTokenizer() as t:
+        print(1)
+        parse_tree = t.parser('20년간 소유의 의사로 평온, 공연하게 부동산을 점유하는 자는 등기함으로써 그 소유권을 취득한다.')
+        print(parse_tree.getSyntaxTree().getTreeString())

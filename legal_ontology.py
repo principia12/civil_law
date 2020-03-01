@@ -17,7 +17,7 @@ class LegalStatement:
         assert all([e in ['법령', '장', '절', '조', '항', '목', '조문', '항목'] for e in kargs])
         for k, v in kargs.items():
             setattr(self, k, v)
-        
+
         if '조문' in kargs:
             from nlp_modules.preprocessor import Tokenizer, basic_tokenizer
             from korlib.korean_dict import 역접접속사
@@ -36,6 +36,10 @@ class LegalStatement:
                 for idx in sents:
                     setattr(self, '_%d문', sents[idx])
 
+    def __call__(self, args):
+        if re.match(r'제%d조', args):
+            pass
+
     def __str__(self):
         법령 = self.법령
         장 = self.장
@@ -49,7 +53,7 @@ class LegalStatement:
         if 절 == '':
             # return f'{법령}\n{장}장 {조}조\n{조문}'
             return '%s\n%d장 %d조\n%s'%(법령, 장, 조, 조문)
-            
+
         # return f'{법령}\n{장}장 {절}절 {조}조\n{조문}'
         return '%s\n%d장 %d절 %d조\n%s'%(법령, 장, 절, 조, 조문)
 
